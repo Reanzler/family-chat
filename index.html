@@ -1,25 +1,46 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Family Chat</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    #messages { border: 1px solid #ccc; height: 300px; overflow-y: auto; padding: 10px; margin-bottom: 10px; }
+    input { width: 80%; padding: 5px; }
+    button { padding: 5px 10px; }
+  </style>
+</head>
 <body>
-<h1>Семейный чат</h1>
-<input id="msg" placeholder="Введите сообщение">
-<button onclick="send()">Отправить</button>
-<div id="chat"></div>
+  <h2>Family Chat</h2>
+  <div id="messages"></div>
+  <input type="text" id="messageInput" placeholder="Введите сообщение...">
+  <button id="sendBtn">Отправить</button>
 
-<script>
-  // Замените URL на URL вашего Render сервера позже
-  const ws = new WebSocket("wss://ВАШ_СЕРВЕР.onrender.com");
+  <script>
+    const ws = new WebSocket("wss://family-chat-kmkk.onrender.com");
 
-  ws.onmessage = (event) => {
-    const chat = document.getElementById("chat");
-    chat.innerHTML += "<div>" + event.data + "</div>";
-  };
+    const messagesDiv = document.getElementById("messages");
+    const input = document.getElementById("messageInput");
+    const button = document.getElementById("sendBtn");
 
-  function send() {
-    const text = document.getElementById("msg").value;
-    ws.send(text);
-    document.getElementById("msg").value = "";
-  }
-</script>
+    ws.onopen = () => console.log("Соединение открыто");
+    ws.onmessage = (event) => {
+      const msg = document.createElement("div");
+      msg.textContent = event.data;
+      messagesDiv.appendChild(msg);
+      messagesDiv.scrollTop = messagesDiv.scrollHeight;
+    };
+
+    button.onclick = () => {
+      if(input.value.trim() !== "") {
+        ws.send(input.value);
+        input.value = "";
+      }
+    };
+
+    input.addEventListener("keypress", (e) => {
+      if(e.key === "Enter") button.click();
+    });
+  </script>
 </body>
 </html>
