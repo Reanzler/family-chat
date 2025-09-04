@@ -30,12 +30,24 @@ const wss = new WebSocket.Server({ server });
 
 wss.on("connection", (ws) => {
   console.log("Новый клиент подключился");
-  ws.username = `User${wss.clients.size}`
+
   ws.on("message", (message) => {
-    // Рассылаем сообщение всем подключённым клиентам
+    // Преобразуем JSON в объект
+    let data;
+    try {
+      data = JSON.parse(message);
+    } catch (e) {
+      console.error("Некорректное сообщение:", message);
+      return;
+    }
+
+    // Рассылаем всем подключённым клиентам
     wss.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
-        client.send(message.toString());
+        client.send(JSON.stringify({
+          username: data.username,
+          message: data.message
+        }));
       }
     });
   });
