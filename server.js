@@ -30,7 +30,7 @@ const wss = new WebSocket.Server({ server });
 
 wss.on("connection", (ws) => {
   console.log("Новый клиент подключился");
-
+  ws.username = `User${wss.clients.size}`
   ws.on("message", (message) => {
     // Рассылаем сообщение всем подключённым клиентам
     wss.clients.forEach((client) => {
