@@ -1,50 +1,50 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Family Chat</title>
-  <style>
-    #messages { border: 1px solid #ccc; height: 300px; overflow-y: auto; padding: 5px; }
-    #username, #message { width: 200px; }
-    #sendBtn { width: 80px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Family Chat</title>
+<style>
+  #messages { border: 1px solid #ccc; height: 300px; overflow-y: auto; padding: 5px; }
+  #username, #message { width: 200px; }
+  #sendBtn { width: 80px; }
+</style>
 </head>
 <body>
-  <h1>Family Chat</h1>
-  <input type="text" id="username" placeholder="Введите имя">
-  <br><br>
-  <input type="text" id="message" placeholder="Сообщение">
-  <button id="sendBtn">Отправить</button>
-  <div id="messages"></div>
+<h1>Family Chat</h1>
+<input type="text" id="username" placeholder="Введите имя">
+<br><br>
+<input type="text" id="message" placeholder="Сообщение">
+<button id="sendBtn">Отправить</button>
+<div id="messages"></div>
 
-  <script>
-    const ws = new WebSocket("wss://family-chat-kmkk.onrender.com");
+<script>
+const ws = new WebSocket(`wss://${window.location.host}`);
 
-    const usernameInput = document.getElementById("username");
-    const messageInput = document.getElementById("message");
-    const sendBtn = document.getElementById("sendBtn");
-    const messagesDiv = document.getElementById("messages");
+const usernameInput = document.getElementById("username");
+const messageInput = document.getElementById("message");
+const sendBtn = document.getElementById("sendBtn");
+const messagesDiv = document.getElementById("messages");
 
-    sendBtn.addEventListener("click", () => {
-      const username = usernameInput.value || "Anonymous";
-      const message = messageInput.value;
-      if (!message) return;
+sendBtn.addEventListener("click", () => {
+  const username = usernameInput.value || "Anonymous";
+  const message = messageInput.value;
+  if (!message) return;
 
-      ws.send(JSON.stringify({ username, message }));
-      messageInput.value = "";
-    });
+  ws.send(JSON.stringify({ username, message }));
+  messageInput.value = "";
+});
 
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      const msgElement = document.createElement("div");
-      msgElement.textContent = `${data.username}: ${data.message}`;
-      messagesDiv.appendChild(msgElement);
-      messagesDiv.scrollTop = messagesDiv.scrollHeight; // авто-прокрутка вниз
-    };
+ws.onmessage = (event) => {
+  const data = JSON.parse(event.data);
+  const msgElement = document.createElement("div");
+  msgElement.textContent = `${data.username}: ${data.message}`;
+  messagesDiv.appendChild(msgElement);
+  messagesDiv.scrollTop = messagesDiv.scrollHeight;
+};
 
-    ws.onopen = () => console.log("Подключение к серверу установлено");
-    ws.onclose = () => console.log("Соединение закрыто");
-  </script>
+ws.onopen = () => console.log("Подключение установлено");
+ws.onclose = () => console.log("Соединение закрыто");
+</script>
 </body>
 </html>

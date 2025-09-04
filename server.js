@@ -3,7 +3,6 @@ const fs = require("fs");
 const path = require("path");
 const WebSocket = require("ws");
 
-// Render назначает порт через переменную окружения
 const PORT = process.env.PORT || 8080;
 
 // HTTP сервер для отдачи index.html
@@ -25,14 +24,13 @@ const server = http.createServer((req, res) => {
   }
 });
 
-// WebSocket сервер поверх HTTP
+// WebSocket сервер
 const wss = new WebSocket.Server({ server });
 
 wss.on("connection", (ws) => {
   console.log("Новый клиент подключился");
 
   ws.on("message", (message) => {
-    // Преобразуем JSON в объект
     let data;
     try {
       data = JSON.parse(message);
@@ -41,7 +39,7 @@ wss.on("connection", (ws) => {
       return;
     }
 
-    // Рассылаем всем подключённым клиентам
+    // Рассылаем всем
     wss.clients.forEach((client) => {
       if (client.readyState === WebSocket.OPEN) {
         client.send(JSON.stringify({
@@ -56,6 +54,4 @@ wss.on("connection", (ws) => {
 });
 
 // Запуск сервера
-server.listen(PORT, () => {
-  console.log(`Сервер запущен на порту ${PORT}`);
-});
+server.listen(PORT, () => console.log(`Сервер запущен на порту ${PORT}`));
