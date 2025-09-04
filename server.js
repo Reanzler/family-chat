@@ -1,16 +1,31 @@
 const http = require("http");
+const fs = require("fs");
+const path = require("path");
 const WebSocket = require("ws");
 
 // Render назначает порт через переменную окружения
 const PORT = process.env.PORT || 8080;
 
-// Создаем HTTP сервер (можно расширить для статических файлов)
+// HTTP сервер для отдачи index.html
 const server = http.createServer((req, res) => {
-  res.writeHead(200);
-  res.end("Server is running");
+  if (req.url === "/") {
+    const filePath = path.join(__dirname, "index.html");
+    fs.readFile(filePath, (err, data) => {
+      if (err) {
+        res.writeHead(500);
+        res.end("Error loading index.html");
+        return;
+      }
+      res.writeHead(200, { "Content-Type": "text/html" });
+      res.end(data);
+    });
+  } else {
+    res.writeHead(404);
+    res.end("Not Found");
+  }
 });
 
-// Создаем WebSocket сервер поверх HTTP
+// WebSocket сервер поверх HTTP
 const wss = new WebSocket.Server({ server });
 
 wss.on("connection", (ws) => {
