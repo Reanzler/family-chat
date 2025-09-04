@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<body>
+<h1>Семейный чат</h1>
+<input id="msg" placeholder="Введите сообщение">
+<button onclick="send()">Отправить</button>
+<div id="chat"></div>
+
+<script>
+  // Замените URL на URL вашего Render сервера позже
+  const ws = new WebSocket("wss://ВАШ_СЕРВЕР.onrender.com");
+
+  ws.onmessage = (event) => {
+    const chat = document.getElementById("chat");
+    chat.innerHTML += "<div>" + event.data + "</div>";
+  };
+
+  function send() {
+    const text = document.getElementById("msg").value;
+    ws.send(text);
+    document.getElementById("msg").value = "";
+  }
+</script>
+</body>
+</html>
